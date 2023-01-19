@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, View, ScrollView } from 'react-native';
 import Header from '../../components/Header';
 import HabitDay, { DAY_SIZE } from '../../components/HabitDay';
 import { generateDatesFromYearBeginning } from '../../utils/generateRangeDatesFromYearStart';
@@ -6,7 +6,7 @@ import { generateDatesFromYearBeginning } from '../../utils/generateRangeDatesFr
 const weekDays = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 
 const datesFromYearStart = generateDatesFromYearBeginning();
-const minimumSummaryDaysSize = 18 * 5;
+const minimumSummaryDaysSize = 18 * 7;
 const amountOfDaysToFill = minimumSummaryDaysSize - datesFromYearStart.length;
 
 function Home() {
@@ -24,21 +24,25 @@ function Home() {
           </Text>
         ))}
       </View>
-      <View className="flex-row flex-wrap">
-        {datesFromYearStart.map((date) => {
-          return <HabitDay key={date.toString()} />;
-        })}
-        {amountOfDaysToFill > 0
-          ? Array.from({ length: amountOfDaysToFill }).map((_, index) => (
-              <TouchableOpacity
-                className="bg-zinc-900 rounded-lg border-2 m-1 border-zinc-800 opacity-40"
-                style={{ width: DAY_SIZE, height: DAY_SIZE }}
-                activeOpacity={0.7}
-                key={index}
-              />
-            ))
-          : null}
-      </View>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 48 }}
+      >
+        <View className="flex-row flex-wrap">
+          {datesFromYearStart.map((date) => {
+            return <HabitDay key={date.toString()} />;
+          })}
+          {amountOfDaysToFill > 0
+            ? Array.from({ length: amountOfDaysToFill }).map((_, index) => (
+                <View
+                  className="bg-zinc-900 rounded-lg border-2 m-1 border-zinc-800 opacity-40"
+                  style={{ width: DAY_SIZE, height: DAY_SIZE }}
+                  key={index}
+                />
+              ))
+            : null}
+        </View>
+      </ScrollView>
     </View>
   );
 }
