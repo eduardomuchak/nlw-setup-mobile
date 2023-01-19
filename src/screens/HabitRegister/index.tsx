@@ -1,5 +1,6 @@
 import { ScrollView, Text, TextInput, View } from 'react-native';
 import BackButton from '../../components/BackButton';
+import HabitCheckbox from '../../components/HabitCheckbox';
 
 function HabitRegisterPage() {
   return (
@@ -22,6 +23,9 @@ function HabitRegisterPage() {
           `}
           placeholder="Digite aqui"
         />
+
+        <HabitCheckbox checked description={'asddas'} />
+        <HabitCheckbox description={'asddas'} />
       </ScrollView>
     </View>
   );
