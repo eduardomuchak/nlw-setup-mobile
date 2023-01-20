@@ -1,17 +1,40 @@
-import { Text, View, ScrollView } from 'react-native';
+import { Text, View, ScrollView, Alert } from 'react-native';
 import Header from '../../components/Header';
 import HabitDay, { DAY_SIZE } from '../../components/HabitDay';
 import { generateDatesFromYearBeginning } from '../../utils/generateRangeDatesFromYearStart';
 import { useNavigation } from '@react-navigation/native';
-
-const weekDays = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
-
-const datesFromYearStart = generateDatesFromYearBeginning();
-const minimumSummaryDaysSize = 18 * 7;
-const amountOfDaysToFill = minimumSummaryDaysSize - datesFromYearStart.length;
+import { fetchData } from '../../services';
+import { useEffect, useState } from 'react';
+import Loading from '../../components/Loading';
 
 function Home() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [summary, setSummary] = useState(null);
   const { navigate } = useNavigation();
+
+  const weekDays = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+  const datesFromYearStart = generateDatesFromYearBeginning();
+  const minimumSummaryDaysSize = 18 * 7;
+  const amountOfDaysToFill = minimumSummaryDaysSize - datesFromYearStart.length;
+
+  const handleRequest = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetchData();
+      setSummary(response);
+    } catch (error) {
+      Alert.alert('Ops', 'Não foi possível carregar o sumário de hábitos');
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    handleRequest();
+  }, []);
+
+  if (isLoading) return <Loading />;
 
   return (
     <View className={'flex-1 bg-background px-8 pt-16'}>
