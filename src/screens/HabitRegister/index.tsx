@@ -1,4 +1,5 @@
 import {
+  Alert,
   ScrollView,
   Text,
   TextInput,
@@ -10,6 +11,7 @@ import HabitCheckbox from '../../components/HabitCheckbox';
 import { useState } from 'react';
 import { Feather } from '@expo/vector-icons';
 import colors from 'tailwindcss/colors';
+import { createHabit } from '../../services';
 
 const weekDayNames = [
   'Domingo',
@@ -23,6 +25,7 @@ const weekDayNames = [
 
 function HabitRegisterPage() {
   const [checkedWeekDays, setCheckedWeekDays] = useState<number[]>([]);
+  const [title, setTitle] = useState('');
 
   function handleToggleWeekDay(weekDayIndex: number) {
     const alreadySelected = checkedWeekDays.includes(weekDayIndex);
@@ -36,6 +39,28 @@ function HabitRegisterPage() {
       // setCheckedWeekDays((prevState) => [...prevState, weekDayIndex]);
       // ou
       setCheckedWeekDays([...checkedWeekDays, weekDayIndex]);
+    }
+  }
+
+  async function handleCreateHabit() {
+    try {
+      if (!title.trim() || checkedWeekDays.length === 0)
+        Alert.alert(
+          'Novo hábito',
+          'Informe o nome do hábito e escolha a periodicidade',
+        );
+
+      await createHabit({
+        title,
+        weekDays: checkedWeekDays,
+      });
+      Alert.alert('Novo hábito', 'Hábito criado com sucesso');
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Ops', 'Não foi possível criar o hábito');
+    } finally {
+      setTitle('');
+      setCheckedWeekDays([]);
     }
   }
 
@@ -63,6 +88,8 @@ function HabitRegisterPage() {
           placeholder="Ex.: Exercícios, dormir bem, etc..."
           placeholderTextColor={colors.zinc[400]}
           caretHidden={true}
+          onChangeText={setTitle}
+          value={title}
         />
 
         <Text className="mt-4 mb-3 text-white font-semibold text-base">
@@ -85,6 +112,7 @@ function HabitRegisterPage() {
         <TouchableOpacity
           className="w-full h-14 flex-row items-center justify-center bg-violet-500 rounded-lg mt-6"
           activeOpacity={0.7}
+          onPress={handleCreateHabit}
         >
           <Feather name="check" size={20} color={colors.white} />
           <Text className="font-semibold text-white text-base ml-2">
