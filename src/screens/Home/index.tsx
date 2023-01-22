@@ -3,7 +3,7 @@ import Header from '../../components/Header';
 import HabitDay, { DAY_SIZE } from '../../components/HabitDay';
 import { generateDatesFromYearBeginning } from '../../utils/generateRangeDatesFromYearStart';
 import { useNavigation } from '@react-navigation/native';
-import { fetchData } from '../../services';
+import { getSummary } from '../../services';
 import { useEffect, useState } from 'react';
 import Loading from '../../components/Loading';
 import dayjs from 'dayjs';
@@ -28,7 +28,7 @@ function Home() {
   const handleRequest = async () => {
     try {
       setIsLoading(true);
-      const response = await fetchData();
+      const response = await getSummary();
       setSummary(response);
     } catch (error) {
       Alert.alert('Ops', 'Não foi possível carregar o sumário de hábitos');

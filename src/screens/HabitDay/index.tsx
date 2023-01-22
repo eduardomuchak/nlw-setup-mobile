@@ -1,21 +1,69 @@
-import { ScrollView, Text, View } from 'react-native';
+import { Alert, ScrollView, Text, View } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import BackButton from '../../components/BackButton';
 import dayjs from 'dayjs';
 import { ProgressBar } from '../../components/ProgressBar';
 import HabitCheckbox from '../../components/HabitCheckbox';
+import { getHabitsByDay } from '../../services';
+import { useEffect, useState } from 'react';
+import Loading from '../../components/Loading';
 
 interface Params {
   date: string;
+}
+
+interface DayInfo {
+  completed: string[];
+  possibleHabits: {
+    id: string;
+    title: string;
+  }[];
 }
 
 function HabitDayPage() {
   const route = useRoute();
   const { date } = route.params as Params;
 
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [dayInfo, setDayInfo] = useState<null | DayInfo>(null);
+  const [completedHabits, setCompletedHabits] = useState<string[]>([]);
+
   const parsedDate = dayjs(date);
   const dayOfWeek = parsedDate.format('dddd');
   const dayAndMonth = parsedDate.format('DD/MM');
+
+  async function fetchHabits() {
+    try {
+      setIsLoading(true);
+      const response = await getHabitsByDay(date);
+
+      setDayInfo(response);
+      setCompletedHabits(response.completedHabits);
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Ops', 'Não foi possível buscar as informações dos hábitos');
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleToggleHabit(habitId: string) {
+    if (completedHabits.includes(habitId)) {
+      setCompletedHabits((prevState) =>
+        prevState.filter((habit) => habit !== habitId),
+      );
+    } else {
+      setCompletedHabits((prevState) => [...prevState, habitId]);
+    }
+  }
+
+  useEffect(() => {
+    fetchHabits();
+  }, []);
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <View className={'flex-1 bg-background px-8 pt-16'}>
@@ -35,8 +83,14 @@ function HabitDayPage() {
         <ProgressBar progress={90} />
 
         <View className="mt-6">
-          <HabitCheckbox title="Beber Água" checked={true} />
-          <HabitCheckbox title="Academia" checked={false} />
+          {dayInfo?.possibleHabits.map((habit, index) => (
+            <HabitCheckbox
+              key={`${index}-${habit.id}`}
+              title={habit.title}
+              checked={completedHabits.includes(habit.id)}
+              onPress={() => handleToggleHabit(habit.id)}
+            />
+          ))}
         </View>
       </ScrollView>
     </View>

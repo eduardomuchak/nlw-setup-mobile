@@ -1,7 +1,12 @@
 import { api } from '../lib/axios';
 
-export async function fetchData() {
+export async function getSummary() {
   const { data } = await api.get('/summary');
+  return data;
+}
+
+export async function getHabitsByDay(date: string) {
+  const { data } = await api.get('/day', { params: { date } });
   return data;
 }
 

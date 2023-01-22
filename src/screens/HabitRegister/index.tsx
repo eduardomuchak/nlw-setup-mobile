@@ -44,16 +44,17 @@ function HabitRegisterPage() {
 
   async function handleCreateHabit() {
     try {
-      if (!title.trim() || checkedWeekDays.length === 0)
-        Alert.alert(
+      if (!title.trim() || checkedWeekDays.length === 0) {
+        return Alert.alert(
           'Novo hábito',
           'Informe o nome do hábito e escolha a periodicidade',
         );
-
+      }
       await createHabit({
         title,
         weekDays: checkedWeekDays,
       });
+
       Alert.alert('Novo hábito', 'Hábito criado com sucesso');
     } catch (error) {
       console.log(error);
