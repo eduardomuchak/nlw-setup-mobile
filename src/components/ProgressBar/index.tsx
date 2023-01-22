@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
+  withTiming,
 } from 'react-native-reanimated';
 
 interface Props {
@@ -17,7 +18,7 @@ export function ProgressBar({ progress = 0 }: Props) {
   }));
 
   useEffect(() => {
-    sharedProgress.value = progress;
+    sharedProgress.value = withTiming(progress, { duration: 200 });
   }, [progress]);
 
   return (
