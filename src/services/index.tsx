@@ -17,3 +17,8 @@ export async function createHabit(payload: {
   const { data } = await api.post('/habits', payload);
   return data;
 }
+
+export async function updateHabit(habitId: string) {
+  const { data } = await api.patch(`/habits/${habitId}/toggle`);
+  return data;
+}

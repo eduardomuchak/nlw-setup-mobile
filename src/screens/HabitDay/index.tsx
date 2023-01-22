@@ -4,7 +4,7 @@ import BackButton from '../../components/BackButton';
 import dayjs from 'dayjs';
 import { ProgressBar } from '../../components/ProgressBar';
 import HabitCheckbox from '../../components/HabitCheckbox';
-import { getHabitsByDay } from '../../services';
+import { getHabitsByDay, updateHabit } from '../../services';
 import { useEffect, useState } from 'react';
 import Loading from '../../components/Loading';
 import { generateProgressPercentage } from '../../utils/generetaProgressPercentage';
@@ -60,6 +60,8 @@ function HabitDayPage() {
 
   async function handleToggleHabit(habitId: string) {
     try {
+      updateHabit(habitId);
+
       if (completedHabits.includes(habitId)) {
         setCompletedHabits((prevState) =>
           prevState.filter((habit) => habit !== habitId),
