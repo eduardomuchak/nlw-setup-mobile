@@ -7,6 +7,8 @@ import HabitCheckbox from '../../components/HabitCheckbox';
 import { getHabitsByDay } from '../../services';
 import { useEffect, useState } from 'react';
 import Loading from '../../components/Loading';
+import { generateProgressPercentage } from '../../utils/generetaProgressPercentage';
+import { EmptyHabitsDay } from '../../components/EmptyHabitsDay';
 
 interface Params {
   date: string;
@@ -31,6 +33,13 @@ function HabitDayPage() {
   const parsedDate = dayjs(date);
   const dayOfWeek = parsedDate.format('dddd');
   const dayAndMonth = parsedDate.format('DD/MM');
+
+  const habitsProgress = dayInfo?.possibleHabits.length
+    ? generateProgressPercentage(
+        dayInfo.possibleHabits.length,
+        completedHabits.length,
+      )
+    : 0;
 
   async function fetchHabits() {
     try {
@@ -80,17 +89,21 @@ function HabitDayPage() {
         <Text className="text-white font-extrabold text-3xl">
           {dayAndMonth}
         </Text>
-        <ProgressBar progress={90} />
+        <ProgressBar progress={habitsProgress} />
 
         <View className="mt-6">
-          {dayInfo?.possibleHabits.map((habit, index) => (
-            <HabitCheckbox
-              key={`${index}-${habit.id}`}
-              title={habit.title}
-              checked={completedHabits.includes(habit.id)}
-              onPress={() => handleToggleHabit(habit.id)}
-            />
-          ))}
+          {dayInfo?.possibleHabits && dayInfo.possibleHabits.length > 0 ? (
+            dayInfo?.possibleHabits.map((habit, index) => (
+              <HabitCheckbox
+                key={`${index}-${habit.id}`}
+                title={habit.title}
+                checked={completedHabits.includes(habit.id)}
+                onPress={() => handleToggleHabit(habit.id)}
+              />
+            ))
+          ) : (
+            <EmptyHabitsDay />
+          )}
         </View>
       </ScrollView>
     </View>
