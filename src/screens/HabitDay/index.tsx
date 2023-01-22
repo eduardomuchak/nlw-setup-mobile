@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import Loading from '../../components/Loading';
 import { generateProgressPercentage } from '../../utils/generetaProgressPercentage';
 import { EmptyHabitsDay } from '../../components/EmptyHabitsDay';
+import clsx from 'clsx';
 
 interface Params {
   date: string;
@@ -31,6 +32,7 @@ function HabitDayPage() {
   const [completedHabits, setCompletedHabits] = useState<string[]>([]);
 
   const parsedDate = dayjs(date);
+  const isDayInPast = parsedDate.endOf('day').isBefore(new Date());
   const dayOfWeek = parsedDate.format('dddd');
   const dayAndMonth = parsedDate.format('DD/MM');
 
@@ -91,7 +93,11 @@ function HabitDayPage() {
         </Text>
         <ProgressBar progress={habitsProgress} />
 
-        <View className="mt-6">
+        <View
+          className={clsx('mt-6', {
+            'opacity-50': isDayInPast,
+          })}
+        >
           {dayInfo?.possibleHabits && dayInfo.possibleHabits.length > 0 ? (
             dayInfo?.possibleHabits.map((habit, index) => (
               <HabitCheckbox
@@ -99,12 +105,18 @@ function HabitDayPage() {
                 title={habit.title}
                 checked={completedHabits.includes(habit.id)}
                 onPress={() => handleToggleHabit(habit.id)}
+                disabled={isDayInPast}
               />
             ))
           ) : (
             <EmptyHabitsDay />
           )}
         </View>
+        {isDayInPast ? (
+          <Text className="text-white mt-10 text-center">
+            Você não pode editar hábitos de dias passados
+          </Text>
+        ) : null}
       </ScrollView>
     </View>
   );
